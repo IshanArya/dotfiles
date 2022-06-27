@@ -28,3 +28,30 @@ Fira Code Regular 12 pt.
 - Bright Cyan: #9AEDFE
 - White: #F1F1F0
 - Bright White: #FFFFFF
+
+## Windows Terminal JSON
+```
+{
+    "background": "#0F111A",
+    "black": "#000000",
+    "blue": "#82AAFF",
+    "brightBlack": "#686868",
+    "brightBlue": "#57C7FF",
+    "brightCyan": "#9AEDFE",
+    "brightGreen": "#89FFB1",
+    "brightPurple": "#F07178",
+    "brightRed": "#F78C6C",
+    "brightWhite": "#FFFFFF",
+    "brightYellow": "#F9FFC3",
+    "cursorColor": "#FFFFFF",
+    "cyan": "#89DDFF",
+    "foreground": "#EFF0EB",
+    "green": "#5AF78E",
+    "name": "Ocean Dark",
+    "purple": "#FF6AC1",
+    "red": "#FF5370",
+    "selectionBackground": "#939EAB",
+    "white": "#F1F1F0",
+    "yellow": "#F3F99D"
+},
+```
