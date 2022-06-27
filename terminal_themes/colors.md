@@ -9,7 +9,7 @@ Fira Code Regular 12 pt.
 ## Text Colors
 - Text: #eff0eb
 - Bold Text: #f8f8f8
-- Selection: #2b2e3b
+- Selection: #939EAB
 
 ## Base Colors
 - Black: 0
