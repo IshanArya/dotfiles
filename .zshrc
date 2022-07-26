@@ -3,6 +3,7 @@ source $HOME/.aliases
 source $HOME/.plugin.zsh
 
 plugins=(
+    marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions
     rupa/z
 
