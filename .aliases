@@ -4,18 +4,18 @@
 alias x="exit"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
-alias ..="z .."
-alias ...="z ../.."
-alias ....="z ../../.."
-alias .....="z ../../../.."
-alias ~="z ~" # `z` is probably faster to type though
-alias -- -="z -"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
 
 # Shortcuts
-alias d="z /mnt/c/Users/ishan/Documents"
-alias dl="z /mnt/c/Users/ishan/Downloads"
-alias dt="z /mnt/c/Users/ishan/Desktop"
-alias p="z ~/projects"
+alias d="cd /mnt/c/Users/ishan/Documents"
+alias dl="cd /mnt/c/Users/ishan/Downloads"
+alias dt="cd /mnt/c/Users/ishan/Desktop"
+alias p="cd ~/projects"
 alias g="git"
 
 # Detect which `ls` flavor is in use
