@@ -1,0 +1,28 @@
+[user]
+	name = Ishan Arya
+	email = iarya@drwholdings.com
+[pull]
+	rebase = true
+[alias]
+	pl = pull
+	p = pull
+	ps = push
+	pnb = push --set-upstream origin
+	pnbs = "!git push --set-upstream origin \"$(git symbolic-ref --short HEAD)\""
+	co = checkout
+	nb = checkout -b
+	cr = !git fetch && git checkout
+	br = branch
+	db = branch -D
+	dbr = push origin --delete
+	delbranch = branch -D
+	ci = commit
+	cm = commit -am
+	amend = commit --amend
+	ca = commit --amend
+	st = status
+	stat = status
+	df = diff
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	
