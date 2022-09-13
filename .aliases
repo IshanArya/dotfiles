@@ -49,13 +49,18 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias ngrep='grep'
 
+# Open command
+if type "explorer.exe" &> /dev/null; then # windows
+	alias open="explorer.exe"
+elif type "xdg-open" &> /dev/null; then # ubuntu
+	alias open="xdg-open"
+fi
+
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
 
 # Get week number
 alias week='date +%V'
-
-alias open="explorer.exe"
 alias d2u="dos2unix"
 alias uu='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
 alias reload="source $HOME/.zshrc"
