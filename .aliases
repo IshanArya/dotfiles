@@ -39,18 +39,24 @@ alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
 # Always use color output for `ls`
 alias ls="command ls ${colorflag}"
 
+# normal ls
+alias lsn="ls"
+
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+alias ngrep='grep'
 
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
 
 # Get week number
 alias week='date +%V'
+
 alias open="explorer.exe"
 alias d2u="dos2unix"
 alias uu='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
 alias reload="source $HOME/.zshrc"
+alias yd="yt-dlp"
