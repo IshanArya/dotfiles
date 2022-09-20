@@ -65,3 +65,8 @@ alias d2u="dos2unix"
 alias uu='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
 alias reload="source $HOME/.zshrc"
 alias yd="yt-dlp"
+
+# docker
+alias dcpull="docker compose pull"
+alias dcrestart="docker compose up -d --remove-orphans"
+alias dcprune="docker image prune"
