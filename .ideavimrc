@@ -1,0 +1,29 @@
+set shell=zsh\ -i
+
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'terryma/vim-multiple-cursors'
+
+" Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+nmap <C-g> <Plug>NextWholeOccurrence
+xmap <C-g> <Plug>NextWholeOccurrence
+nmap g<C-g> <Plug>NextOccurrence
+xmap g<C-g> <Plug>NextOccurrence
+xmap <C-x> <Plug>SkipOccurrence
+xmap <C-S-g> <Plug>RemoveOccurrence
+
+
+" Press `f` to activate AceJump
+map f <Action>(AceAction)
+" Press `F` to activate Target Mode
+map F <Action>(AceTargetAction)
+" Press `g` to activate Line Mode
+"map g <Action>(AceLineAction)
+
+
+
+:set relativenumber
+:set number
+:set hlsearch
+:set incsearch
+:set multiple-cursors
