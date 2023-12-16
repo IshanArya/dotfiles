@@ -5,7 +5,8 @@ source $HOME/.plugin.zsh
 plugins=(
     marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions
-    rupa/z
+    # rupa/z
+    ajeetdsouza/zoxide
 
     zdharma-continuum/fast-syntax-highlighting
     zsh-users/zsh-history-substring-search
