@@ -42,6 +42,11 @@ alias ls="command ls ${colorflag}"
 # normal ls
 alias lsn="ls"
 
+# space
+alias space='du -sB GB /'
+alias spacehere='du -sh .'
+alias spacelist='du -shc ./*'
+
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
 alias grep='grep --color=auto'
