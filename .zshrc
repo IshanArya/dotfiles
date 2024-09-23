@@ -2,6 +2,12 @@
 source $HOME/.aliases
 source $HOME/.plugin.zsh
 
+LOCAL_ALIASES=$HOME/.local_aliases
+
+if [ -f $LOCAL_ALIASES ]; then
+    source $LOCAL_ALIASES
+fi
+
 plugins=(
     marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions
