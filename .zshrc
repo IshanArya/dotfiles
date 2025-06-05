@@ -1,6 +1,7 @@
 # End of lines configured by zsh-newuser-install
 source $HOME/.aliases
 source $HOME/.plugin.zsh
+source $HOME/.profile
 
 LOCAL_ALIASES=$HOME/.local_aliases
 
@@ -9,7 +10,7 @@ if [ -f $LOCAL_ALIASES ]; then
 fi
 
 plugins=(
-    marlonrichert/zsh-autocomplete
+    # marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions
     # rupa/z
     ajeetdsouza/zoxide
@@ -23,3 +24,5 @@ plugin-load $plugins
 
 eval "$(starship init zsh)"
 
+autoload -Uz compinit
+compinit
