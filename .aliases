@@ -42,6 +42,9 @@ alias ls="command ls ${colorflag}"
 # normal ls
 alias lsn="ls"
 
+# delete zone identifier
+alias dz="find . -name '*:Zone.Identifier' -type f -delete"
+
 # space
 alias space='du -sB GB /'
 alias spacehere='du -sh .'
