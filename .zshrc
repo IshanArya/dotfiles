@@ -2,6 +2,7 @@
 source $HOME/.aliases
 source $HOME/.plugin.zsh
 source $HOME/.profile
+source $HOME/.func.zsh
 
 LOCAL_ALIASES=$HOME/.local_aliases
 
