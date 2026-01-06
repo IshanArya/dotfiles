@@ -1,0 +1,8 @@
+# /etc/systemd/system/mnt-data.automount
+[Unit]
+Description=AutoMount for /mnt/ishan
+[Automount]
+Where=/mnt/ishan
+TimeoutIdleSec=600
+[Install]
+WantedBy=multi-user.target

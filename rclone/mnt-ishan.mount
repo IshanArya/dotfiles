@@ -1,0 +1,7 @@
+[Unit]
+Description=Mount for /mnt/ishan
+[Mount]
+Type=rclone
+What=ishan:ishan
+Where=/mnt/ishan
+Options=rw,_netdev,allow_other,args2env,config=/home/nyx/.config/rclone/rclone.conf,cache-dir=/var/rclone,vfs-cache-mode=full,vfs-cache-max-age=8h,v
