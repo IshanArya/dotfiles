@@ -10,20 +10,21 @@ if [ -f $LOCAL_ALIASES ]; then
     source $LOCAL_ALIASES
 fi
 
+autoload -Uz compinit
+compinit
+
 plugins=(
-    # marlonrichert/zsh-autocomplete
+    marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions
     # rupa/z
     ajeetdsouza/zoxide
-
-    zdharma-continuum/fast-syntax-highlighting
-    zsh-users/zsh-history-substring-search
     zsh-users/zsh-autosuggestions
 )
 
 plugin-load $plugins
 
-eval "$(starship init zsh)"
+plugin-load-deferred \
+    zdharma-continuum/fast-syntax-highlighting \
+    zsh-users/zsh-history-substring-search
 
-autoload -Uz compinit
-compinit
+eval "$(starship init zsh)"

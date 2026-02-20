@@ -21,6 +21,20 @@ function plugin-load {
   done
 }
 
+# defer plugin loading to a one-shot precmd hook (useful for plugins
+# that need widgets created by earlier precmd hooks, e.g. zsh-autocomplete)
+function plugin-load-deferred {
+  autoload -Uz add-zsh-hook
+  _deferred_plugin_load_list=($@)
+  function _deferred_plugin_load {
+    plugin-load $_deferred_plugin_load_list
+    unset _deferred_plugin_load_list
+    add-zsh-hook -d precmd _deferred_plugin_load
+    unfunction _deferred_plugin_load
+  }
+  add-zsh-hook precmd _deferred_plugin_load
+}
+
 # update plugins
 function plugin-update {
   ZPLUGINDIR=${ZPLUGINDIR:-$HOME/.config/zsh/plugins}
