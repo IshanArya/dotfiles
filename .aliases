@@ -81,4 +81,4 @@ alias dcprune="docker image prune"
 alias dcreload="dcpull && dcrestart && dcprune"
 
 # opencode
-alias oc='ANTHROPIC_API_KEY=pJVntEMnPxn2WyENtRfMCatMUzQ4YpdUZV2UZmtRXXVEspREfTR7ufE2W9QEfR7V ANTHROPIC_BASE_URL=http://127.0.0.1:8484/code/v1 opencode'
+alias oc='opencode'
