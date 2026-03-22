@@ -25,4 +25,9 @@
 	df = diff
 	unstage = reset HEAD --
 	last = log -1 HEAD
+	wt = worktree
+	wta = worktree add
+	wtr = worktree remove
+	wtls = worktree list
+
 	
