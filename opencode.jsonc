@@ -1,0 +1,39 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "plugin": ["@mohak34/opencode-notifier@latest", "opencode-claude-auth@latest"],
+  // , "@angdrew/opencode-hashline-plugin"
+  // "provider": {
+  //   "anthropic": {
+  //     "options": {
+  //       "baseURL": "http://127.0.0.1:8484/code/v1",
+  //       "apiKey": "6P7JTetxpAnCcNMEYkRsy4ZFyS2rj2dEYKmERtDgRwNvXUYAwzEPjfBTRLDdK3vu",
+  //     }
+  //   }
+  // },
+  "mcp": {
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true,
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "gh_grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@playwright/mcp@latest",
+        "--extension"
+      ],
+      "enabled": true
+    }
+  },
+}
