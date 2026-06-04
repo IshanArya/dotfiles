@@ -1,0 +1,6 @@
+# Ghostty configuration
+
+background-opacity = 0.9
+
+# wallust generated colors
+config-file = wallust.conf

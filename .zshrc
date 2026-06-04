@@ -13,6 +13,9 @@ fi
 autoload -Uz compinit
 compinit
 
+# Disable autosuggest async mode to avoid leaking pipe fds (fd exhaustion)
+ZSH_AUTOSUGGEST_USE_ASYNC=0
+
 plugins=(
     marlonrichert/zsh-autocomplete
     zsh-users/zsh-completions

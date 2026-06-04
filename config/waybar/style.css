@@ -1,0 +1,254 @@
+/* wallust generated colors */
+@import "wallust/colors-waybar.css";
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+/* Transparent bar */
+window#waybar {
+    background-color: transparent;
+    color: @foreground;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/* ---- Continuous island groups: ONE rounded semi-transparent box per cluster ---- */
+.modules-left > widget > box,
+.modules-center > widget > box,
+.modules-right > widget > box {
+    background-color: @pill;
+    border-radius: 14px;
+    margin: 2px 0;
+    padding: 0 4px;
+    box-shadow: 0 0 0 1px @background-alt;
+}
+
+/* Clock (inside center group) */
+#clock {
+    background-color: transparent;
+    padding: 2px 12px;
+    color: @color13;
+    box-shadow: none;
+}
+
+/* ---- Modules inside groups: transparent, just text + padding ---- */
+#custom-cheatsheet,
+#workspaces,
+#custom-cava,
+#custom-playerctl,
+#custom-weather,
+#cpu,
+#memory,
+#disk,
+#pulseaudio,
+#pulseaudio.microphone,
+#network,
+#idle_inhibitor,
+#custom-swaync,
+#tray,
+#battery,
+#custom-power {
+    background-color: transparent;
+    color: @foreground;
+    padding: 2px 9px;
+    box-shadow: none;
+}
+
+/* ---- Thin vertical pipe divider between modules ---- */
+#custom-divider {
+    color: @foreground;
+    padding: 0 4px;
+    background-color: transparent;
+    font-weight: normal;
+}
+
+/* ---- Gap between the two right-side islands ---- */
+#custom-sep {
+    padding: 0 5px;
+    background-color: transparent;
+}
+
+/* ---- Workspaces ---- */
+#workspaces {
+    padding: 2px 4px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    margin: 0 1px;
+    color: @foreground;
+    background-color: transparent;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#workspaces button:hover {
+    color: @color13;
+    background-color: @background-alt;
+}
+
+#workspaces button.active {
+    color: @background;
+    background-color: @color12;
+    padding: 0 12px;
+}
+
+#workspaces button.urgent {
+    color: @background;
+    background-color: @color1;
+}
+
+/* ---- Cheat sheet button ---- */
+#custom-cheatsheet {
+    color: @color14;
+    padding: 2px 10px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+#custom-cheatsheet:hover {
+    color: @background;
+    background-color: @color14;
+}
+
+/* ---- Cava visualizer ---- */
+#custom-cava {
+    color: @color12;
+}
+
+/* ---- Media player ---- */
+#custom-playerctl {
+    color: @color13;
+}
+
+/* ---- Weather ---- */
+#custom-weather {
+    color: @color14;
+}
+
+#custom-weather.hot {
+    color: @color6;
+}
+
+#custom-weather.cold {
+    color: @color12;
+}
+
+#custom-weather.rain,
+#custom-weather.snow {
+    color: @color4;
+}
+
+/* ---- System monitor: distinct accent so they're readable ---- */
+#cpu {
+    color: @color13;
+}
+
+#memory {
+    color: @color12;
+}
+
+#disk {
+    color: @color5;
+}
+
+#cpu.warning,
+#memory.warning,
+#disk.warning {
+    color: @color3;
+}
+
+#cpu.critical,
+#memory.critical,
+#disk.critical {
+    color: @color1;
+}
+
+/* ---- Audio / network ---- */
+#pulseaudio {
+    color: @color13;
+}
+
+#pulseaudio.microphone {
+    color: @color5;
+}
+
+#pulseaudio.muted {
+    color: @color1;
+}
+
+#network {
+    color: @color12;
+}
+
+#network.disconnected {
+    color: @color1;
+}
+
+/* ---- Idle inhibitor ---- */
+#idle_inhibitor {
+    color: @foreground;
+}
+
+#idle_inhibitor.activated {
+    color: @color14;
+}
+
+/* ---- Notification bell ---- */
+#custom-swaync {
+    color: @color13;
+}
+
+/* ---- Power button ---- */
+#custom-power {
+    color: @color14;
+    padding: 2px 12px;
+    border-radius: 12px;
+}
+
+#custom-power:hover {
+    color: @background;
+    background-color: @color14;
+}
+
+/* ---- Battery (unused on desktop, kept for laptops) ---- */
+#battery.warning {
+    color: @color3;
+}
+
+#battery.critical {
+    color: @color1;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @color13;
+}
+
+/* ---- Tray ---- */
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* ---- Tooltips ---- */
+tooltip {
+    background-color: @background;
+    border: 1px solid @color0;
+    border-radius: 10px;
+}
+
+tooltip label {
+    color: @foreground;
+}

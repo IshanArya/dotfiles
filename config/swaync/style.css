@@ -1,0 +1,125 @@
+/* wallust generated colors */
+@import "wallust/colors-swaync.css";
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+}
+
+/* ---- Notification toasts ---- */
+.notification {
+    border-radius: 12px;
+    margin: 6px 12px;
+    box-shadow: 0 0 0 1px @color0;
+    padding: 0;
+}
+
+.notification-row {
+    outline: none;
+}
+
+.notification-content {
+    background: @background-alt;
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid @color0;
+}
+
+.notification.critical .notification-content {
+    border: 1px solid @color1;
+}
+
+.notification-default-action {
+    border-radius: 12px;
+    background: transparent;
+}
+
+.summary {
+    color: @foreground;
+    font-weight: bold;
+}
+
+.body {
+    color: @foreground;
+}
+
+.time {
+    color: @color8;
+    font-size: 12px;
+}
+
+.close-button {
+    background: transparent;
+    color: @foreground;
+    border-radius: 8px;
+    margin: 4px;
+    padding: 2px 6px;
+}
+
+.close-button:hover {
+    background: @color1;
+    color: @background;
+}
+
+/* ---- Control center panel ---- */
+.control-center {
+    background: @background-alt;
+    border: 1px solid @color0;
+    border-radius: 16px;
+    margin: 4px;
+    padding: 12px;
+}
+
+.control-center .notification {
+    margin: 6px 0;
+}
+
+.widget-title {
+    color: @foreground;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 6px 4px;
+}
+
+.widget-title > button {
+    color: @background;
+    background: @color12;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+
+.widget-title > button:hover {
+    background: @color13;
+}
+
+/* ---- DND toggle ---- */
+.widget-dnd {
+    color: @foreground;
+    margin: 6px 4px;
+    font-size: 14px;
+}
+
+.widget-dnd > switch {
+    border-radius: 12px;
+    background: @color0;
+}
+
+.widget-dnd > switch:checked {
+    background: @color12;
+}
+
+.widget-dnd > switch slider {
+    background: @foreground;
+    border-radius: 12px;
+}
+
+/* ---- mpris (media) ---- */
+.widget-mpris {
+    color: @foreground;
+    border-radius: 12px;
+}
+
+.notification-group-headers {
+    color: @foreground;
+    font-weight: bold;
+}

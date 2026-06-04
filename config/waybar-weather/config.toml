@@ -1,0 +1,38 @@
+## waybar-weather configuration
+## Docs: https://github.com/wneessen/waybar-weather
+
+## =============================================================================
+## General Configuration
+## =============================================================================
+units = "imperial"
+
+## =============================================================================
+## Weather Configuration
+## =============================================================================
+[weather]
+provider = "open-meteo"
+forecast_hours = 3
+cold_threshold = 0.0
+hot_threshold = 32.0
+
+## =============================================================================
+## Update and Output Intervals
+## =============================================================================
+[intervals]
+weather_update = "15m"
+output = "30s"
+
+## =============================================================================
+## Geolocation Configuration
+## =============================================================================
+## Use the static files placed alongside this config. The geolocation file
+## (lat,long) gives the most accurate fix; cityname provides a readable label.
+[geolocation]
+geolocation_file = "/home/nyx/.config/waybar-weather/geolocation"
+cityname_file = "/home/nyx/.config/waybar-weather/cityname"
+
+## =============================================================================
+## Geocoder Configuration
+## =============================================================================
+[geocoder]
+provider = "nominatim"

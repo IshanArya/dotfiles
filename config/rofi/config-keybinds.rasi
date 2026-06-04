@@ -1,0 +1,53 @@
+/* Keybinds cheat sheet theme.
+   Inherits wallust colors via theme.rasi -> wallust/colors-rofi.rasi. */
+
+@import "~/.config/rofi/theme.rasi"
+
+/* Wider window for two-column keybind listing */
+window {
+    width: 70%;
+    background-color: @background-trans;
+}
+
+mainbox {
+    children: [ inputbar, message, listview ];
+}
+
+entry {
+    placeholder: "  Search keybinds";
+}
+
+message {
+    margin: 8px 0px 0px 0px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: @normal-background;
+}
+
+textbox {
+    text-color: @color8;
+}
+
+/* Reference list: two columns, more rows, no icons */
+listview {
+    columns: 2;
+    lines: 12;
+    margin: 10px 0px 0px 0px;
+    fixed-height: false;
+    scrollbar: true;
+    cycle: true;
+}
+
+element {
+    padding: 6px 8px;
+    spacing: 0px;
+}
+
+element-icon {
+    size: 0px;
+}
+
+element-text {
+    horizontal-align: 0.0;
+    vertical-align: 0.5;
+}

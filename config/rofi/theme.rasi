@@ -1,0 +1,63 @@
+/* wallust generated colors */
+@import "~/.config/rofi/wallust/colors-rofi.rasi"
+
+
+* {
+    background-color: transparent;
+    text-color: @foreground;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    background-color: @background-trans;
+    border: 2px;
+    border-color: @border-color;
+    border-radius: 10px;
+    width: 600px;
+    padding: 12px;
+}
+
+inputbar {
+    background-color: @normal-background;
+    padding: 10px;
+    border-radius: 8px;
+    spacing: 8px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    text-color: @color12;
+}
+
+entry {
+    placeholder: "Search...";
+    placeholder-color: @color8;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    margin: 10px 0px 0px 0px;
+    fixed-height: false;
+}
+
+element {
+    padding: 8px;
+    border-radius: 8px;
+    spacing: 8px;
+}
+
+element selected {
+    background-color: @selected-normal-background;
+    text-color: @selected-normal-foreground;
+}
+
+element-icon {
+    size: 24px;
+}
+
+element-text {
+    vertical-align: 0.5;
+}
