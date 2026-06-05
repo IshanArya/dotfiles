@@ -1,0 +1,21 @@
+#[Backend]
+backend = "auto"          # auto-detects Hyprland CTM backend
+transition_mode = "geo"   # gradual sunrise/sunset based on geo.toml coords
+
+#[Smoothing]
+smoothing = true
+startup_duration = 0.5
+shutdown_duration = 0.5
+adaptive_interval = 1
+
+#[Time-based config]
+night_temp = 3500         # warm endpoint after the ~50min sunset transition (lower = stronger)
+day_temp = 6500           # neutral daytime
+night_gamma = 90
+day_gamma = 100
+update_interval = "auto"
+
+#[Geolocation]
+# Placeholder only. Real coordinates live in geo.toml (gitignored) and override these.
+latitude = 0.0
+longitude = 0.0

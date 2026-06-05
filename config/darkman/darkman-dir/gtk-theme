@@ -1,0 +1,8 @@
+#!/bin/sh
+# darkman runs this with $1 = "dark" or "light".
+# Uses the modern Adwaita color-scheme preference (no separate -dark theme installed).
+case "$1" in
+  dark)  gsettings set org.gnome.desktop.interface color-scheme prefer-dark ;;
+  light) gsettings set org.gnome.desktop.interface color-scheme default ;;
+  *) exit 1 ;;
+esac

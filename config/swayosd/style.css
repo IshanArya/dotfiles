@@ -1,0 +1,55 @@
+/* swayosd OSD styling, themed from wallust colors. */
+@import url("file:///home/nyx/.config/swayosd/wallust/colors-swayosd.css");
+
+window#osd {
+  padding: 12px 18px;
+  border-radius: 20px;
+  border: 2px solid alpha(@foreground, 0.25);
+  background: @background-alt;
+}
+
+window#osd #container {
+  margin: 14px;
+}
+
+window#osd image,
+window#osd label {
+  color: @foreground;
+}
+
+window#osd progressbar:disabled,
+window#osd image:disabled {
+  opacity: 0.5;
+}
+
+window#osd progressbar,
+window#osd segmentedprogress {
+  min-height: 8px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+}
+
+window#osd trough,
+window#osd segment {
+  min-height: inherit;
+  border-radius: inherit;
+  border: none;
+  background: alpha(@foreground, 0.3);
+}
+
+window#osd progress,
+window#osd segment.active {
+  min-height: inherit;
+  border-radius: inherit;
+  border: none;
+  background: @foreground;
+}
+
+window#osd segment {
+  margin-left: 8px;
+}
+
+window#osd segment:first-child {
+  margin-left: 0;
+}
