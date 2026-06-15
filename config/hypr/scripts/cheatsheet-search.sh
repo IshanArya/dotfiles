@@ -14,6 +14,8 @@ if pidof rofi >/dev/null; then
   exit 0
 fi
 
-display_keybinds=$("$parser" "$keybinds_conf")
-
-printf '%s\n' "$display_keybinds" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"
+# Pipe parser output straight into rofi: rows are NUL-delimited and may carry
+# an invisible "meta" keyword (the section name) so searching a category name
+# (e.g. "Screenshot") surfaces every binding in that section. Capturing in a
+# variable would strip the NUL bytes, so we pipe directly.
+"$parser" "$keybinds_conf" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"

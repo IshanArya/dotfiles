@@ -63,10 +63,10 @@ entries=(
   "SUPER + Shift + X       Lock screen"
 
   "──  Screenshots  ──"
-  "SUPER + Shift + 3       Full screen to file"
-  "SUPER + Shift + 4       Region to file"
-  "SUPER + Shift + 5       Region to clipboard"
-  "SUPER + Shift + S       Region annotate (swappy)"
+  "Print                   Region to file"
+  "SUPER + Print           Full screen to file"
+  "SUPER + Shift + Print   Region annotate (swappy)"
+  "SUPER + Shift + S       Region to clipboard"
 
   "──  Mouse  ──"
   "SUPER + LMB drag        Move window"
@@ -77,4 +77,24 @@ entries=(
   "SUPER + Shift + /       This quick cheat sheet"
 )
 
-printf '%s\n' "${entries[@]}" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"
+# Emit NUL-delimited rofi dmenu rows. Each entry carries an invisible "meta"
+# keyword (its section name) so typing a category (e.g. "Screenshots") surfaces
+# every binding in that section. Section headers themselves are marked
+# nonselectable so they can't be activated. Display stays visually identical.
+emit_rows() {
+  local section=""
+  local entry
+  for entry in "${entries[@]}"; do
+    if [[ "$entry" =~ ^──[[:space:]]*(.*[^[:space:]])[[:space:]]*──$ ]]; then
+      # Section header: capture name for following rows, make it nonselectable.
+      section="${BASH_REMATCH[1]}"
+      printf '%s\x00nonselectable\x1ftrue\x1fmeta\x1f%s\n' "$entry" "$section"
+    elif [[ -n "$entry" ]]; then
+      printf '%s\x00meta\x1f%s\n' "$entry" "$section"
+    else
+      printf '\n'
+    fi
+  done
+}
+
+emit_rows | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"

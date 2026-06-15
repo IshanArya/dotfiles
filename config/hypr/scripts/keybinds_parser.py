@@ -31,10 +31,18 @@ def extract_combo(line):
     except Exception:
         return None
 
+def extract_section(line):
+    # Match section comment headers like:  # --- Screenshots --------------
+    m = re.match(r'^\s*#\s*-{2,}\s*(.+?)\s*-{2,}\s*$', line)
+    if m:
+        return m.group(1).strip()
+    return None
+
 def parse_files(files):
     # Data structures to match original logic
     binding_map = {}        # combo -> effective line
     source_map = {}         # combo -> source file
+    section_map = {}        # combo -> section name (from preceding comment header)
     user_bind_map = {}      # combo -> user bind line
     unbound_user = {}       # combo -> True if explicitly unbound in user file
     seen_any_bind = {}      # combo -> True if seen
@@ -51,11 +59,16 @@ def parse_files(files):
         if not os.path.exists(file_path):
             continue
             
+        current_section = ""
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 for line in f:
                     line = line.rstrip('\n')
                     if not line or line.strip().startswith('#'):
+                        # Track section header comments (e.g. "# --- Screenshots ---")
+                        sect = extract_section(line)
+                        if sect:
+                            current_section = sect
                         continue
                         
                     is_bind = re.match(r'^\s*bind[a-z]*\s*=', line)
@@ -77,11 +90,13 @@ def parse_files(files):
                         if combo not in source_map:
                             binding_map[combo] = line
                             source_map[combo] = file_path
+                            section_map[combo] = current_section
                             
                         if is_user_file:
                             user_bind_map[combo] = line
                             binding_map[combo] = line
                             source_map[combo] = file_path
+                            section_map[combo] = current_section
                             
                     elif is_unbind:
                         combo_raw = extract_combo(line)
@@ -115,7 +130,7 @@ def parse_files(files):
         if not eff_line:
             continue
             
-        raw_keybinds.append(eff_line)
+        raw_keybinds.append((eff_line, section_map.get(combo, "")))
         
         # Check for missing unbind suggestions
         # If user overrides a default but didn't unbind in user file
@@ -130,9 +145,15 @@ def parse_files(files):
     return raw_keybinds, missing_unbind_suggestions
 
 def format_for_rofi(raw_binds):
+    # Returns a list of (display_text, section) tuples.
     formatted_lines = []
     
-    for line in raw_binds:
+    for entry in raw_binds:
+        # Each entry is a (line, section) tuple.
+        if isinstance(entry, tuple):
+            line, section = entry
+        else:
+            line, section = entry, ""
         # line is like "bind = MODS, KEY, DISPATCHER, PARAMS" or "bindd = ..."
         # Parsing logic from awk script:
         
@@ -197,14 +218,16 @@ def format_for_rofi(raw_binds):
             
         # Final Print Format
         if has_desc and desc:
-            formatted_lines.append(f"{combo_str} — {desc}")
+            display = f"{combo_str} — {desc}"
         elif dispatcher:
             if params:
-                formatted_lines.append(f"{combo_str} — {dispatcher} {params}")
+                display = f"{combo_str} — {dispatcher} {params}"
             else:
-                formatted_lines.append(f"{combo_str} — {dispatcher}")
+                display = f"{combo_str} — {dispatcher}"
         else:
-            formatted_lines.append(combo_str)
+            display = combo_str
+
+        formatted_lines.append((display, section))
             
     return formatted_lines
 
@@ -223,8 +246,17 @@ def main():
         
     formatted = format_for_rofi(binds)
     
-    for line in formatted:
-        print(line)
+    # Emit NUL-delimited rofi dmenu rows. Each row may carry an invisible
+    # "meta" keyword (the section name) so typing a category name surfaces
+    # every binding in that section, even though the section word isn't shown.
+    out = sys.stdout.buffer
+    for display, section in formatted:
+        if section:
+            row = f"{display}\x00meta\x1f{section}\n"
+        else:
+            row = f"{display}\n"
+        out.write(row.encode("utf-8"))
+    out.flush()
         
     # Handle suggestions (print to stderr or a specific file if needed, 
     # but the original script assigns it to a variable 'msg'.
