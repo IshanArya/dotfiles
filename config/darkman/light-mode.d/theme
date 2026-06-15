@@ -1,0 +1,3 @@
+#!/bin/sh
+# darkman light-mode hook: swap wallpaper, regenerate wallust palette, GTK3 light.
+exec "$HOME/.config/hypr/scripts/theme-switch.sh" light
