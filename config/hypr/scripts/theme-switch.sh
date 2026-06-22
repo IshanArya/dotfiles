@@ -9,8 +9,8 @@ set -uo pipefail
 
 MODE="${1:-}"
 case "$MODE" in
-  dark)  SET_DIR="Dark";  GTK_DARK=1 ;;
-  light) SET_DIR="Light"; GTK_DARK=0 ;;
+  dark)  SET_DIR="Dark";  GTK_DARK=1; GTK_SCHEME="prefer-dark"  ;;
+  light) SET_DIR="Light"; GTK_DARK=0; GTK_SCHEME="prefer-light" ;;
   *) echo "usage: $0 <dark|light>" >&2; exit 1 ;;
 esac
 
@@ -84,9 +84,17 @@ fi
 # Regenerates all templates defined in ~/.config/wallust/wallust.toml.
 command -v wallust >/dev/null && wallust run -s "$WALL" || true
 
+# ---- gsettings color-scheme --------------------------------------------------
+# Belt-and-suspenders for GTK4/libadwaita apps that read the color-scheme key
+# directly. The XDG Settings portal is routed to darkman (see
+# ~/.config/xdg-desktop-portal/hyprland-portals.conf), but keeping this key in
+# sync avoids any stale 'prefer-dark' lingering for apps that bypass the portal.
+command -v gsettings >/dev/null && \
+  gsettings set org.gnome.desktop.interface color-scheme "$GTK_SCHEME" 2>/dev/null || true
+
 # ---- GTK3 (Thunar et al.) dark/light toggle ----------------------------------
 # GTK3 apps don't follow the XDG portal hint; they need this in settings.ini.
-# Brave/GTK4 are handled separately by darkman's portal:true (untouched).
+# Brave/GTK4 follow darkman via the XDG Settings portal (color-scheme).
 GTK3_INI="$HOME/.config/gtk-3.0/settings.ini"
 mkdir -p "$(dirname "$GTK3_INI")"
 [[ -f "$GTK3_INI" ]] || printf '[Settings]\n' > "$GTK3_INI"
