@@ -17,6 +17,29 @@ esac
 WALL_BASE="$HOME/Photos/Wallpapers"
 WALL_DIR="$WALL_BASE/$SET_DIR"
 
+# ---- Resolve Wayland display -------------------------------------------------
+# If this hook runs before the compositor exported WAYLAND_DISPLAY (e.g. a
+# service-manager race at login), awww would silently default to "wayland-0" and
+# spawn a stray daemon on the wrong socket (which then core-dumps). Derive the
+# live display from the running Hyprland instance instead of guessing.
+if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then
+  if command -v hyprctl >/dev/null && hyprctl instances -j >/dev/null 2>&1; then
+    # Hyprland names its socket after the instance: wayland-<n> on most setups.
+    for sock in "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/wayland-[0-9]*; do
+      [[ -S "$sock" ]] || continue
+      WAYLAND_DISPLAY="$(basename "$sock")"
+      break
+    done
+  fi
+fi
+if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then
+  command -v notify-send >/dev/null && \
+    notify-send -u critical "theme-switch" "WAYLAND_DISPLAY unset; aborting"
+  echo "theme-switch: WAYLAND_DISPLAY unset and could not be resolved" >&2
+  exit 1
+fi
+export WAYLAND_DISPLAY
+
 # Monitors are hardcoded (no jq dependency). Adjust if your outputs change.
 MONITORS="DP-1,DP-2"
 
@@ -38,12 +61,24 @@ if [[ -z "$WALL" || ! -f "$WALL" ]]; then
 fi
 
 # ---- Wallpaper ---------------------------------------------------------------
-if ! pgrep -x awww-daemon >/dev/null; then
+# Maintain a stable pointer to the active wallpaper (used by hyprlock, etc.).
+ln -sfn "$WALL" "$HOME/.config/hypr/.current-wallpaper"
+
+# Only start a daemon if none is reachable on THIS display's socket. Checking
+# `awww query` (not just pgrep) avoids spawning a duplicate when a daemon exists
+# but on a different socket, and confirms the daemon is actually responsive.
+if ! awww query >/dev/null 2>&1; then
   awww-daemon &
   for _ in {1..20}; do awww query >/dev/null 2>&1 && break; sleep 0.1; done
 fi
-awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" || \
-  awww img "$WALL" "${TRANSITION[@]}" || true
+if awww query >/dev/null 2>&1; then
+  awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" || \
+    awww img "$WALL" "${TRANSITION[@]}" || true
+else
+  command -v notify-send >/dev/null && \
+    notify-send -u critical "theme-switch" "awww-daemon unreachable on $WAYLAND_DISPLAY"
+  echo "theme-switch: awww-daemon unreachable on $WAYLAND_DISPLAY" >&2
+fi
 
 # ---- Wallust palette ---------------------------------------------------------
 # Regenerates all templates defined in ~/.config/wallust/wallust.toml.
