@@ -72,8 +72,20 @@ if ! awww query >/dev/null 2>&1; then
   for _ in {1..20}; do awww query >/dev/null 2>&1 && break; sleep 0.1; done
 fi
 if awww query >/dev/null 2>&1; then
-  awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" || \
-    awww img "$WALL" "${TRANSITION[@]}" || true
+  # Apply the wallpaper, then VERIFY it actually took. At login the DRM outputs
+  # may not be ready yet (esp. NVIDIA-only after disabling the iGPU: aquamarine
+  # logs "atomic drm request: Device or resource busy"). In that window `awww img`
+  # silently fails and the monitors stay on the solid-color fallback. We retry
+  # until `awww query` no longer reports any output "currently displaying: color:"
+  # (i.e. an image is shown), or we exhaust the attempts (~5s worst case).
+  for _attempt in {1..10}; do
+    awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" 2>/dev/null || \
+      awww img "$WALL" "${TRANSITION[@]}" 2>/dev/null || true
+    if ! awww query 2>/dev/null | grep -q 'currently displaying: color:'; then
+      break
+    fi
+    sleep 0.5
+  done
 else
   command -v notify-send >/dev/null && \
     notify-send -u critical "theme-switch" "awww-daemon unreachable on $WAYLAND_DISPLAY"
