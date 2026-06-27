@@ -70,7 +70,24 @@ alias sudo='sudo '
 # Get week number
 alias week='date +%V'
 alias d2u="dos2unix"
-alias uu='sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade'
+# OS-aware system update: `uu`
+# - Arch:   paru -Syu (repo + AUR together; avoids partial upgrades)
+# - Debian/Ubuntu: apt update + upgrade + dist-upgrade
+function uu {
+	if command -v paru > /dev/null 2>&1; then # Arch (AUR helper)
+		paru -Syu "$@"
+	elif command -v yay > /dev/null 2>&1; then # Arch (fallback AUR helper)
+		yay -Syu "$@"
+	elif command -v pacman > /dev/null 2>&1; then # Arch (no AUR helper)
+		echo "No AUR helper found; updating repo packages only (AUR packages will be skipped)." >&2
+		sudo pacman -Syu "$@"
+	elif command -v apt-get > /dev/null 2>&1; then # Debian/Ubuntu
+		sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade
+	else
+		echo "uu: no supported package manager found (paru/yay/pacman/apt-get)." >&2
+		return 1
+	fi
+}
 alias reload="source $HOME/.zshrc"
 alias yd="yt-dlp"
 
