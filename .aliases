@@ -73,9 +73,22 @@ alias d2u="dos2unix"
 # OS-aware system update: `uu`
 # - Arch:   paru -Syu (repo + AUR together; avoids partial upgrades)
 # - Debian/Ubuntu: apt update + upgrade + dist-upgrade
+# On Arch, warns if Hyprland was upgraded so you remember to verify plugins
+# (hyprpm reload) before logging out. Plugins load via `exec-once = hyprpm reload`
+# now, so a broken plugin won't block login, but rebuilding keeps them working.
 function uu {
 	if command -v paru > /dev/null 2>&1; then # Arch (AUR helper)
+		local _hypr_before _hypr_after
+		_hypr_before=$(pacman -Q hyprland 2>/dev/null)
 		paru -Syu "$@"
+		_hypr_after=$(pacman -Q hyprland 2>/dev/null)
+		if [ -n "$_hypr_before" ] && [ "$_hypr_before" != "$_hypr_after" ] && command -v hyprpm > /dev/null 2>&1; then
+			echo "" >&2
+			echo "⚠ Hyprland was upgraded ($_hypr_before -> $_hypr_after)." >&2
+			echo "  Run 'hyprpm reload' and verify your plugins (hy3, easymotion," >&2
+			echo "  split-monitor-workspaces) before logging out." >&2
+			echo "  A broken plugin won't block login, but rebuilding keeps it working." >&2
+		fi
 	elif command -v yay > /dev/null 2>&1; then # Arch (fallback AUR helper)
 		yay -Syu "$@"
 	elif command -v pacman > /dev/null 2>&1; then # Arch (no AUR helper)
