@@ -64,13 +64,13 @@ fi
 # Maintain a stable pointer to the active wallpaper (used by hyprlock, etc.).
 ln -sfn "$WALL" "$HOME/.config/hypr/.current-wallpaper"
 
-# Only start a daemon if none is reachable on THIS display's socket. Checking
-# `awww query` (not just pgrep) avoids spawning a duplicate when a daemon exists
-# but on a different socket, and confirms the daemon is actually responsive.
-if ! awww query >/dev/null 2>&1; then
-  awww-daemon &
-  for _ in {1..20}; do awww query >/dev/null 2>&1 && break; sleep 0.1; done
-fi
+# Wait for the daemon started by hyprland.conf (exec-once = awww-daemon --no-cache).
+# Do NOT spawn our own daemon here: at login this script (via darkman's hook) runs
+# concurrently with that exec-once, and a second awww-daemon races the first for the
+# socket and SIGABRTs (leaving monitors on the solid-color fallback -> black
+# wallpaper). awww has a single daemon per WAYLAND_DISPLAY; exec-once owns it.
+# Poll `awww query` up to ~5s so we tolerate being launched before it's fully up.
+for _ in {1..50}; do awww query >/dev/null 2>&1 && break; sleep 0.1; done
 if awww query >/dev/null 2>&1; then
   # Apply the wallpaper, then VERIFY it actually took. At login the DRM outputs
   # may not be ready yet (esp. NVIDIA-only after disabling the iGPU: aquamarine
@@ -78,12 +78,18 @@ if awww query >/dev/null 2>&1; then
   # silently fails and the monitors stay on the solid-color fallback. We retry
   # until `awww query` no longer reports any output "currently displaying: color:"
   # (i.e. an image is shown), or we exhaust the attempts (~5s worst case).
-  for _attempt in {1..10}; do
+  # Verify the CURRENT mode's wallpaper actually painted on every output, not
+  # merely "some image" — at cold boot awww may be showing the cached previous-
+  # mode image, which the old `! grep color:` check wrongly accepted, leaving the
+  # wallpaper stuck on the prior mode. Retry through the NVIDIA DRM-not-ready
+  # window until awww reports $WALL on each monitor (~10s worst case).
+  IFS=',' read -ra _mons <<< "$MONITORS"
+  _want=${#_mons[@]}
+  for _attempt in {1..20}; do
     awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" 2>/dev/null || \
       awww img "$WALL" "${TRANSITION[@]}" 2>/dev/null || true
-    if ! awww query 2>/dev/null | grep -q 'currently displaying: color:'; then
-      break
-    fi
+    _shown=$(awww query 2>/dev/null | grep -Fc "currently displaying: image: $WALL")
+    [[ "$_shown" -ge "$_want" ]] && break
     sleep 0.5
   done
 else
