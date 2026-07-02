@@ -27,4 +27,9 @@
       "enabled": false
     }
   },
+  "agent": {
+    "explore": {
+      "model": "anthropic/claude-opus-4-8"
+    }
+  }
 }
