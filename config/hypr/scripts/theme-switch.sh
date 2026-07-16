@@ -85,11 +85,43 @@ if awww query >/dev/null 2>&1; then
   # window until awww reports $WALL on each monitor (~10s worst case).
   IFS=',' read -ra _mons <<< "$MONITORS"
   _want=${#_mons[@]}
+
+  # (B) Cold-boot detection. If any output is still on the solid-color fallback,
+  # the daemon is fresh and its cache-restore (which reads the ON-DISK cache =
+  # last session's mode) may fire the moment the NVIDIA DRM outputs settle,
+  # AFTER this script's paint — stomping the correct wallpaper (the login race).
+  # Two mitigations when cold: (1) paint with an INSTANT transition so the paint
+  # is committed to awww's cache immediately (a later restore then reloads the
+  # CORRECT mode, not the stale one); (2) run the settle-watch below to self-heal
+  # if a restore still lands in between. On a live dark<->light switch (outputs
+  # already showing an image) we keep the pretty growing-circle transition.
+  if awww query 2>/dev/null | grep -q "currently displaying: color:"; then
+    _tx=(--transition-type none)
+  else
+    _tx=("${TRANSITION[@]}")
+  fi
+
   for _attempt in {1..20}; do
-    awww img -o "$MONITORS" "$WALL" "${TRANSITION[@]}" 2>/dev/null || \
-      awww img "$WALL" "${TRANSITION[@]}" 2>/dev/null || true
+    awww img -o "$MONITORS" "$WALL" "${_tx[@]}" 2>/dev/null || \
+      awww img "$WALL" "${_tx[@]}" 2>/dev/null || true
     _shown=$(awww query 2>/dev/null | grep -Fc "currently displaying: image: $WALL")
     [[ "$_shown" -ge "$_want" ]] && break
+    sleep 0.5
+  done
+
+  # (A) Settle-phase re-verify. The verify loop above passes the instant it sees
+  # $WALL on every output, but at cold boot awww's cache-restore can repaint the
+  # PREVIOUS mode ~1s later once DP-1/DP-2 finish coming up (observed: light paint
+  # succeeded, then dark cache repainted over it and rewrote the cache as dark).
+  # Keep watching for ~10s; if any output regresses off $WALL, re-assert it with
+  # an instant transition. This self-heals regardless of WHO repainted, and only
+  # does real work during the brief post-login DRM-settle window.
+  for _ in {1..20}; do
+    _shown=$(awww query 2>/dev/null | grep -Fc "currently displaying: image: $WALL")
+    if [[ "$_shown" -lt "$_want" ]]; then
+      awww img -o "$MONITORS" "$WALL" --transition-type none 2>/dev/null || \
+        awww img "$WALL" --transition-type none 2>/dev/null || true
+    fi
     sleep 0.5
   done
 else
