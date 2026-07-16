@@ -112,3 +112,21 @@ alias dcreload="dcpull && dcrestart && dcprune"
 
 # opencode
 alias oc='opencode'
+
+# reboot into Windows (one-shot BootNext; leaves boot order unchanged).
+# Looks up the "Windows Boot Manager" entry number dynamically so it works
+# across machines/reinstalls instead of hardcoding a boot id. Safe to define
+# on mac/ubuntu: it just prints a message if there's no Windows entry.
+reboot-windows() {
+  if ! command -v efibootmgr >/dev/null 2>&1; then
+    echo "reboot-windows: efibootmgr not found (not a UEFI Linux system)"
+    return 1
+  fi
+  local id
+  id="$(efibootmgr | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\? .*Windows Boot Manager.*/\1/p' | head -n1)"
+  if [ -z "$id" ]; then
+    echo "reboot-windows: no 'Windows Boot Manager' EFI entry found"
+    return 1
+  fi
+  sudo efibootmgr --bootnext "$id" && systemctl reboot
+}
