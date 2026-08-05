@@ -68,6 +68,8 @@
     "group/system": {
         "orientation": "horizontal",
         "modules": [
+            "custom/darkmode",
+            "custom/divider",
             "idle_inhibitor",
             "custom/divider",
             "custom/swaync",
@@ -200,6 +202,15 @@
         "tooltip-format-ethernet": "{ifname}: {ipaddr}",
         "tooltip-format-wifi": "{essid} ({signalStrength}%) | {ipaddr}",
         "on-click": "nm-connection-editor"
+    },
+
+    "custom/darkmode": {
+        "exec": "$HOME/.config/waybar/scripts/darkmode.sh",
+        "return-type": "json",
+        "format": "{}",
+        "restart-interval": 5,
+        "on-click": "darkman toggle",
+        "tooltip": true
     },
 
     "idle_inhibitor": {

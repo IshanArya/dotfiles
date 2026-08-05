@@ -51,6 +51,7 @@ window#waybar.hidden {
 #pulseaudio,
 #pulseaudio.microphone,
 #network,
+#custom-darkmode,
 #idle_inhibitor,
 #custom-swaync,
 #tray,
@@ -191,6 +192,15 @@ window#waybar.hidden {
 
 #network.disconnected {
     color: @color1;
+}
+
+/* ---- Dark mode toggle (darkman) ---- */
+#custom-darkmode.dark {
+    color: @color15;
+}
+
+#custom-darkmode.light {
+    color: @color14;
 }
 
 /* ---- Idle inhibitor ---- */
