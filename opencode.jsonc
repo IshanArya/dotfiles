@@ -1,6 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": true,
+  "permission": {
+    "external_directory": {
+      "/tmp": "allow",
+      "/tmp/**": "allow",
+      "/private/tmp": "allow",
+      "/private/tmp/**": "allow"
+    }
+  },
   "plugin": ["@mohak34/opencode-notifier@latest", "opencode-claude-auth@latest"],
   "mcp": {
     "exa": {
