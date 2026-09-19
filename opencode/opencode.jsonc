@@ -1,0 +1,81 @@
+{
+  // Native opencode V2 config. See ./README.md for the full setup/migration guide.
+  //
+  // NOTE: https://opencode.ai/config.json currently still serves the V1 schema,
+  // so your editor will flag `update` / `providers` / `permissions` / `agents` /
+  // `mcp.servers` as unknown. The V2 runtime accepts them; this is editor-only
+  // noise until upstream publishes the V2 schema at this URL.
+  "$schema": "https://opencode.ai/config.json",
+
+  "update": "auto",
+
+  // Pin the default model explicitly. Without this, V2 falls back to the built-in
+  // `opencode` (Console) provider, which is unauthenticated here and fails model
+  // resolution with `Integration.Authorization: Request failed: 401` on any run
+  // that does not pass --model.
+  "model": "anthropic/claude-opus-5",
+
+  // Anthropic is served by a machine-local CLIProxyAPI gateway that fronts the
+  // Claude Code OAuth subscription. It exposes the stock Anthropic wire protocol
+  // and the stock model IDs, so the built-in `anthropic` provider works unchanged
+  // aside from the endpoint + credential.
+  //
+  // CLIPROXY_API_KEY must be set on the opencode *server* process:
+  //   opencode service set env CLIPROXY_API_KEY "$(cat ~/.cli-proxy-api/.opencode-key)"
+  //
+  // OpenAI/ChatGPT deliberately does NOT go through the proxy: it uses opencode's
+  // native ChatGPT OAuth via `/connect`.
+  "providers": {
+    "anthropic": {
+      "settings": {
+        "baseURL": "http://127.0.0.1:8317/v1",
+        "apiKey": "{env:CLIPROXY_API_KEY}",
+      },
+    },
+  },
+
+  // V2 evaluates the last matching rule. `*` matches `/` too, so `/tmp/*` covers
+  // nested paths and the V1 `/tmp/**` form is unnecessary. macOS canonicalises
+  // /tmp -> /private/tmp before matching, so that entry is the one that actually
+  // fires here; the /tmp entries are kept for Linux machines.
+  "permissions": [
+    { "action": "external_directory", "resource": "/tmp", "effect": "allow" },
+    { "action": "external_directory", "resource": "/tmp/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/tmp", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/tmp/*", "effect": "allow" },
+  ],
+
+  "mcp": {
+    "servers": {
+      "exa": {
+        "type": "remote",
+        "url": "https://mcp.exa.ai/mcp",
+      },
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp",
+      },
+      "gh_grep": {
+        "type": "remote",
+        "url": "https://mcp.grep.app",
+      },
+      "playwright": {
+        "type": "local",
+        "command": ["npx", "@playwright/mcp@latest", "--extension"],
+        "disabled": true,
+      },
+    },
+  },
+
+  "agents": {
+    "explore": {
+      "model": "anthropic/claude-opus-4-8",
+    },
+    // V1's top-level `small_model` is now the built-in `title` agent's model.
+    // V2 already defaults title to a small model; this just pins it so the
+    // choice does not drift with upstream defaults.
+    "title": {
+      "model": "anthropic/claude-haiku-4-5",
+    },
+  },
+}
