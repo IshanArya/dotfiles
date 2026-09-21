@@ -45,14 +45,24 @@ OpenAI deliberately does *not* go through the proxy; V2 has native ChatGPT OAuth
 
 ```bash
 brew install cliproxyapi                      # macOS
-# Linux: curl -fsSL https://raw.githubusercontent.com/router-for-me/cliproxyapi-installer/refs/heads/master/cliproxyapi-installer | bash
-# Arch:  paru -S cli-proxy-api-bin
+paru -S cli-proxy-api-bin                     # Arch
+# other Linux: curl -fsSL https://raw.githubusercontent.com/router-for-me/cliproxyapi-installer/refs/heads/master/cliproxyapi-installer | bash
 ```
+
+> **The binary name differs by platform.** Homebrew installs `cliproxyapi`; the Arch
+> `cli-proxy-api-bin` package installs `cli-proxy-api`. Substitute accordingly in every
+> command below.
+>
+> Use `cli-proxy-api-bin`, **not** `cli-proxy-api-systemd-bin`. The `-bin` package ships a
+> *user* unit reading `%h/.cli-proxy-api/config.yaml`, which matches this layout. The
+> `-systemd-bin` package runs a system service as a dedicated user with its auth-dir under
+> `/var/lib/cli-proxy-api`, which makes the OAuth login flow awkward.
 
 Generate a machine-local key and write the config:
 
 ```bash
 mkdir -p ~/.cli-proxy-api
+chmod 700 ~/.cli-proxy-api     # also holds the claude-*.json OAuth tokens
 KEY="cpa-$(openssl rand -hex 24)"
 cat > ~/.cli-proxy-api/config.yaml <<EOF
 host: "127.0.0.1"
@@ -76,7 +86,7 @@ chmod 600 ~/.cli-proxy-api/.opencode-key
 The key is a local-only shared secret between opencode and the gateway, not a
 provider credential. Generate a **different one per machine**; never commit it.
 
-On macOS, `brew services` reads `$(brew --prefix)/etc/cliproxyapi.conf`. Point it
+**macOS only:** `brew services` reads `$(brew --prefix)/etc/cliproxyapi.conf`. Point it
 at the home config (the target must exist first, or the service exits immediately):
 
 ```bash
@@ -86,16 +96,26 @@ brew services stop cliproxyapi
 ln -sfn "$HOME/.cli-proxy-api/config.yaml" "$brew_conf"
 ```
 
-Bind the Claude subscription via OAuth, then start the service:
+**Arch:** nothing to wire up. The packaged user unit already runs
+`cli-proxy-api --config %h/.cli-proxy-api/config.yaml`.
+
+Bind the Claude subscription via OAuth:
 
 ```bash
-cliproxyapi --config ~/.cli-proxy-api/config.yaml --claude-login
-brew services start cliproxyapi
+cliproxyapi   --config ~/.cli-proxy-api/config.yaml --claude-login   # macOS
+cli-proxy-api --config ~/.cli-proxy-api/config.yaml --claude-login   # Arch
 ```
 
 `--claude-login` opens a browser (add `--no-browser` to print the URL instead) and
 listens for the callback on port **54545**. It prints an SSH-tunnel suggestion —
 ignore it, that is only for remote servers.
+
+Then start the service:
+
+```bash
+brew services start cliproxyapi                            # macOS
+systemctl --user enable --now cli-proxy-api.service        # Arch (user unit, no sudo)
+```
 
 Verify:
 
@@ -160,13 +180,22 @@ opencode run --model anthropic/claude-opus-4-8 "Reply with exactly: V2_ANTHROPIC
 
    ```bash
    mkdir -p ~/.opencode/v1-backup
-   cp ~/.opencode/bin/opencode           ~/.opencode/v1-backup/opencode-v1
-   cp ~/.local/share/opencode/auth.json  ~/.opencode/v1-backup/
-   cp ~/.config/opencode/tui.json        ~/.opencode/v1-backup/ 2>/dev/null
+   cp ~/.opencode/bin/opencode              ~/.opencode/v1-backup/opencode-v1
+   cp ~/.local/share/opencode/auth.json     ~/.opencode/v1-backup/
+   cp ~/.local/share/opencode/account.json  ~/.opencode/v1-backup/ 2>/dev/null
+   cp ~/.config/opencode/opencode.jsonc     ~/.opencode/v1-backup/opencode.jsonc.v1
+   cp ~/.config/opencode/tui.json           ~/.opencode/v1-backup/ 2>/dev/null
    ```
 
    Rollback is `cp ~/.opencode/v1-backup/opencode-v1 ~/.opencode/bin/opencode`, or
    re-run the V1 installer at `https://opencode.ai/install`.
+
+   **Do not hand-migrate `opencode.db`.** The V1→V2 guide defines no database step and
+   there is no `opencode migrate` command; V2 migrates the DB in place on first start and
+   imports legacy `auth.json` credentials into it as part of that migration. The V2
+   troubleshooting page only warns against editing the DB with external tools. Note the
+   tradeoff this implies: the binary backup restores the *install*, not the data, so once
+   V2 has migrated the schema a V1 rollback may not read it cleanly.
 
 2. Run the fresh-setup steps above. V2 imports the legacy `auth.json` into its
    SQLite DB (`~/.local/share/opencode/opencode.db`) on first start, so OpenAI
@@ -212,6 +241,35 @@ opencode run --model anthropic/claude-opus-4-8 "Reply with exactly: V2_ANTHROPIC
   ps aux | grep '[o]pencode'
   stat -f '%z %i' ~/.opencode/bin/opencode      # compare against lsof -p <pid>
   ```
+
+- **Do not pin `agents.title.model`** (V1's `small_model`). It is unnecessary here and is
+  an easy way to *break* title generation. OpenCode already resolves a small model for the
+  hidden `title` agent on its own, and it picks an ID the gateway serves — V1 logs show
+  `modelID=claude-haiku-4-5-20251001 small=true agent=title` with nothing configured, and
+  V2 titles sessions correctly with `title` left unset. A pin only overrides a working
+  default with a hand-written ID that can be wrong.
+
+- **The gateway does not expose every model ID as a bare alias.** This is the trap the
+  point above avoids. CLIProxyAPI advertises `claude-haiku-4-5` and `claude-sonnet-4-5`
+  only in their dated forms (`-20251001`, `-20250929`); the bare alias returns
+  `unknown provider for model claude-haiku-4-5`. Opus IDs (`claude-opus-5`,
+  `claude-opus-4-8`) are exposed bare and work either way. Both forms exist in the
+  upstream model catalog, so opencode happily *resolves* a bare alias and only fails at
+  the gateway. Before pinning any model by hand, check what is actually served:
+
+  ```bash
+  curl -s http://127.0.0.1:8317/v1/models -H "Authorization: Bearer $(cat ~/.cli-proxy-api/.opencode-key)" | jq -r '.data[].id'
+  ```
+
+- **The curl installer also drops an `opencode2` shim** next to the binary
+  (`~/.opencode/bin/opencode2`, a one-line `exec .../opencode "$@"`). Harmless; it exists
+  so V2 can be invoked under a distinct name where a V1 `opencode` is still on PATH.
+
+- **On Arch, prefer the curl installer over `paru -S opencode-beta`.** The AUR package
+  installs to `/usr/bin/opencode`, which collides with a curl-installed V1 at
+  `~/.opencode/bin/opencode` (usually earlier in PATH), and `update: "auto"` in this config
+  would fight pacman. The curl installer replaces the V1 binary at the same path, so the
+  upgrade is a drop-in.
 
 - **`auth.json` is left in place.** V2 copies it into SQLite but never writes back,
   and `opencode auth logout` only touches the DB. The stale file is harmless, but
@@ -293,17 +351,25 @@ V2 plugins use `@opencode/plugin` with a different API (`Plugin.define({id, setu
 ## Operations
 
 ```bash
-brew services restart cliproxyapi                    # restart gateway
 opencode service restart                             # restart opencode server
 opencode service status                              # server URL
 opencode debug paths                                 # config / data / db locations
-cliproxyapi --config ~/.cli-proxy-api/config.yaml --claude-login   # re-auth Claude
+
+# gateway - macOS
+brew services restart cliproxyapi
+cliproxyapi --config ~/.cli-proxy-api/config.yaml --claude-login     # re-auth Claude
+
+# gateway - Arch
+systemctl --user restart cli-proxy-api
+systemctl --user status  cli-proxy-api
+journalctl --user -u cli-proxy-api -f
+cli-proxy-api --config ~/.cli-proxy-api/config.yaml --claude-login   # re-auth Claude
 ```
 
 If Anthropic starts returning 401/403, the usual causes are: the gateway is not
-running (`lsof -nP -iTCP:8317 -sTCP:LISTEN`), the Claude OAuth token needs
-refreshing (re-run `--claude-login`), or a saved Anthropic account reappeared in
-`opencode auth list`.
+running (`lsof -nP -iTCP:8317 -sTCP:LISTEN` on macOS, `ss -lntp | grep 8317` on
+Linux), the Claude OAuth token needs refreshing (re-run `--claude-login`), or a
+saved Anthropic account reappeared in `opencode auth list`.
 
 ## References
 

@@ -71,11 +71,5 @@
     "explore": {
       "model": "anthropic/claude-opus-4-8",
     },
-    // V1's top-level `small_model` is now the built-in `title` agent's model.
-    // V2 already defaults title to a small model; this just pins it so the
-    // choice does not drift with upstream defaults.
-    "title": {
-      "model": "anthropic/claude-haiku-4-5",
-    },
   },
 }
