@@ -13,7 +13,7 @@
   // `opencode` (Console) provider, which is unauthenticated here and fails model
   // resolution with `Integration.Authorization: Request failed: 401` on any run
   // that does not pass --model.
-  "model": "anthropic/claude-opus-5",
+  "model": "anthropic/claude-opus-5-5",
 
   // Anthropic is served by a machine-local CLIProxyAPI gateway that fronts the
   // Claude Code OAuth subscription. It exposes the stock Anthropic wire protocol
@@ -67,7 +67,7 @@
 
   "agents": {
     "explore": {
-      "model": "anthropic/claude-opus-4-8",
+      "model": "anthropic/claude-opus-5-5",
     },
   },
 }
