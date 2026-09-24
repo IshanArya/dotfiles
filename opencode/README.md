@@ -371,6 +371,32 @@ running (`lsof -nP -iTCP:8317 -sTCP:LISTEN` on macOS, `ss -lntp | grep 8317` on
 Linux), the Claude OAuth token needs refreshing (re-run `--claude-login`), or a
 saved Anthropic account reappeared in `opencode auth list`.
 
+### Updating CLIProxyAPI
+
+Upstream ships patch releases almost daily; update whenever convenient.
+
+```bash
+# macOS
+brew outdated --verbose cliproxyapi              # installed < available
+brew upgrade cliproxyapi                         # name it; bare `brew upgrade` upgrades everything
+brew services restart cliproxyapi                # per the formula caveats; don't rely on auto-restart
+ls -la "$(brew --prefix)/etc/cliproxyapi.conf"   # must still point to ~/.cli-proxy-api/config.yaml
+cliproxyapi --version 2>&1 | head -1            # no real --version flag; the banner line is the version
+
+# Arch
+paru -S cli-proxy-api-bin
+systemctl --user restart cli-proxy-api
+cli-proxy-api --version 2>&1 | head -1
+```
+
+Then run the `PROXY_OK` check from setup step 1. On macOS, if the `etc/` symlink was
+replaced by a stock file, the service comes up without your port and API key; re-link
+it as in step 1.
+
+Not needed after an upgrade: re-running `--claude-login` (the OAuth tokens in
+`~/.cli-proxy-api/` are untouched), or any opencode change. opencode connects to the
+gateway per request, so there's no `opencode service restart`.
+
 ## References
 
 - opencode V2 docs: <https://opencode.ai/v2/docs>
