@@ -47,10 +47,8 @@
 
   "mcp": {
     "servers": {
-      "exa": {
-        "type": "remote",
-        "url": "https://mcp.exa.ai/mcp",
-      },
+      // No exa MCP: V2 has built-in `websearch` (providers: exa, firecrawl,
+      // parallel, tavily) and `webfetch` tools that cover the same ground.
       "context7": {
         "type": "remote",
         "url": "https://mcp.context7.com/mcp",
