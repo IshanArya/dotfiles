@@ -62,6 +62,16 @@
         "command": ["npx", "@playwright/mcp@latest", "--extension"],
         "disabled": true,
       },
+      "stripe": {
+        "type": "remote",
+        "url": "https://mcp.stripe.com",
+        "oauth": false,
+        "headers": {
+          // Agent-tagged restricted key (rk_...). Set on the service process:
+          //   opencode service set env STRIPE_AGENT_KEY "rk_..."
+          "Authorization": "Bearer {env:STRIPE_AGENT_KEY}",
+        },
+      },
     },
   },
 
