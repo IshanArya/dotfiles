@@ -231,19 +231,78 @@ def format_for_rofi(raw_binds):
             
     return formatted_lines
 
+LUA_SECTION_RE = re.compile(r'^\s*--\s*-{2,}\s*(.+?)\s*-{2,}\s*$')
+LUA_CHEATSHEET_RE = re.compile(r'^\s*--\s*cheatsheet:\s*(.+?)\s*\|\s*(.+?)\s*$')
+# bind("KEYS", "Description" | nil, <dispatcher...>
+LUA_BIND_RE = re.compile(r'^\s*bind\(\s*"([^"]+)"\s*,\s*(?:"([^"]*)"|nil)\s*,\s*(.*)$')
+
+
+def _pretty_keys(keys):
+    return re.sub(r'\s*\+\s*', '+', keys.strip())
+
+
+def parse_lua(files):
+    """Parse keybinds.lua written with the bind(keys, desc, dispatcher) helper.
+
+    Returns (display, section) tuples, same shape as format_for_rofi().
+    """
+    out = []
+    seen = set()
+    for file_path in files:
+        if not os.path.exists(file_path):
+            continue
+        section = ""
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                line = line.rstrip('\n')
+                m = LUA_SECTION_RE.match(line)
+                if m:
+                    section = m.group(1)
+                    continue
+                m = LUA_CHEATSHEET_RE.match(line)
+                if m:
+                    out.append((f"{_pretty_keys(m.group(1))} — {m.group(2)}", section))
+                    continue
+                m = LUA_BIND_RE.match(line)
+                if not m:
+                    continue
+                keys, desc, rest = m.groups()
+                combo = _pretty_keys(keys)
+                if combo in seen:
+                    continue
+                seen.add(combo)
+                if not desc:
+                    # No description: show the dispatcher expression, trimmed.
+                    desc = re.sub(r'\)\s*(,\s*\w+\s*)?\)?\s*$', ')', rest.strip()).rstrip(',')
+                out.append((f"{combo} — {desc}", section))
+    return out
+
+
 def main():
     if len(sys.argv) < 2:
         # No files provided
         sys.exit(0)
-        
+
     config_files = sys.argv[1:]
-    
+
+    if all(p.endswith('.lua') for p in config_files):
+        formatted = parse_lua(config_files)
+        if not formatted:
+            print("no keybinds found.")
+            sys.exit(1)
+        out = sys.stdout.buffer
+        for display, section in formatted:
+            row = f"{display}\x00meta\x1f{section}\n" if section else f"{display}\n"
+            out.write(row.encode("utf-8"))
+        out.flush()
+        return
+
     binds, suggestions = parse_files(config_files)
-    
+
     if not binds:
         print("no keybinds found.")
         sys.exit(1)
-        
+
     formatted = format_for_rofi(binds)
     
     # Emit NUL-delimited rofi dmenu rows. Each row may carry an invisible

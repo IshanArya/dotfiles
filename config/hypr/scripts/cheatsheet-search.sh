@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Searchable Hyprland keybinds via rofi.
-# Auto-generated from ~/.config/hypr/keybinds.conf using keybinds_parser.py.
+# Auto-generated from ~/.config/hypr/keybinds.lua using keybinds_parser.py.
 # Themed with wallust via config-keybinds.rasi -> theme.rasi -> colors-rofi.rasi.
 
-keybinds_conf="$HOME/.config/hypr/keybinds.conf"
+keybinds_conf="$HOME/.config/hypr/keybinds.lua"
 parser="$HOME/.config/hypr/scripts/keybinds_parser.py"
 rofi_theme="$HOME/.config/rofi/config-keybinds.rasi"
 msg='NOTE: Pressing ENTER or clicking does nothing — this is a reference list'

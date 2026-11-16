@@ -52,6 +52,10 @@ check_contrast = true
 hypr.template = 'colors-hyprland.conf'
 hypr.target = '~/.config/hypr/wallust/colors-hyprland.conf'
 
+# Hyprland >= 0.57 is Lua-only; the .conf above is still used by hyprlock.
+hyprlua.template = 'colors-hyprland.lua'
+hyprlua.target = '~/.config/hypr/wallust/colors-hyprland.lua'
+
 waybar.template = 'colors-waybar.css'
 waybar.target = '~/.config/waybar/wallust/colors-waybar.css'
 

@@ -16,7 +16,7 @@ entries=(
   "──  Focus / Move  ──"
   "SUPER + h/j/k/l         Focus left/down/up/right"
   "SUPER + arrows          Focus (arrow keys)"
-  "SUPER + ;               Easymotion jump to window"
+  "SUPER + ;               Easymotion (if plugin loads)"
   "SUPER + Shift + h/j/k/l Move window in direction"
   "SUPER + Shift + arrows  Move window (arrow keys)"
 

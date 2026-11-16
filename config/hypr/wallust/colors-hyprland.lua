@@ -1,0 +1,24 @@
+-- wallust template - colors-hyprland (Lua, Hyprland >= 0.57)
+-- Loaded by ~/.config/hypr/hyprland.lua via require("wallust.colors-hyprland").
+-- hyprlock still uses colors-hyprland.conf (hyprlang).
+return {
+    background      = "rgb(101216)",
+    backgroundAlpha = "rgba(101216B3)",
+    foreground      = "rgb(FFF5CC)",
+    color0  = "rgb(3B3C42)",
+    color1  = "rgb(52525C)",
+    color2  = "rgb(8A6E59)",
+    color3  = "rgb(9F7850)",
+    color4  = "rgb(8A7E85)",
+    color5  = "rgb(9D7B6B)",
+    color6  = "rgb(BFAA51)",
+    color7  = "rgb(F6E8AD)",
+    color8  = "rgb(ACA379)",
+    color9  = "rgb(595A67)",
+    color10 = "rgb(A1785A)",
+    color11 = "rgb(B37231)",
+    color12 = "rgb(917C87)",
+    color13 = "rgb(AB7155)",
+    color14 = "rgb(FFE26D)",
+    color15 = "rgb(F6E8AD)",
+}
